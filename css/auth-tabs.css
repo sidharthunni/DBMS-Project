@@ -1,0 +1,10 @@
+/* Customer / Admin tabs + banner (original login/register look ki add-on) */
+.role-tabs{display:grid;grid-template-columns:1fr 1fr;background:rgba(15,23,42,.08);border-radius:14px;padding:4px;margin:0 0 20px}
+.role-tab{border:0;background:none;padding:11px 8px;border-radius:11px;font:600 14px 'Poppins',sans-serif;color:#475569;cursor:pointer;transition:all .2s}
+.role-tab:hover{color:#1D4ED8}
+.role-tab.on{background:#fff;color:#2563EB;box-shadow:0 4px 12px rgba(15,23,42,.14)}
+.auth-banner{background:#FEF2F2;border:1px solid #FECACA;color:#B91C1C;padding:10px 14px;border-radius:12px;font-size:13px;margin-bottom:14px}
+.admin-only{display:none}
+.is-admin .admin-only{display:block}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:0;background:none;color:#2563EB;font:600 12px 'Poppins',sans-serif;cursor:pointer}
+.btn-gradient:disabled{opacity:.65;cursor:wait}

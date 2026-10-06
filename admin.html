@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — TripNest</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <header class="mt-nav"><a href="index.html">✈ TripNest Admin</a><a href="#" id="adminLogout">Admin Logout</a></header>
+  <main class="mt-wrap">
+    <h1>Admin Dashboard</h1>
+    <p class="mt-sub">Database lo unna anni users, trips, bookings, messages.</p>
+    <div class="stats" id="stats"></div>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-t="users">Users</button>
+      <button class="tab" data-t="trips">Trips</button>
+      <button class="tab" data-t="bookings">Bookings</button>
+      <button class="tab" data-t="messages">Messages</button>
+      <button class="tab" data-t="payments">Payments</button>
+      <button class="tab" data-t="emails">Emails</button>
+      <button class="tab" data-t="refunds">Refunds</button>
+    </div>
+    <section class="mt-card"><div id="panel">Loading…</div></section>
+  </main>
+  <script src="js/admin.js"></script>
+</body>
+</html>

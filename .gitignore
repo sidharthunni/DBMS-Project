@@ -1,0 +1,14 @@
+# dependencies and secrets (push cheyakudadu)
+node_modules/
+.env
+*.log
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+*.zip
+
+.env
+backend/.env
+node_modules/

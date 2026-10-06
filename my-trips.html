@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Trips — TripNest</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/my-trips.css" />
+</head>
+<body>
+  <header class="mt-nav">
+    <a href="index.html">✈ TripNest</a>
+    <span><a href="plan-trip.html">Plan a Trip</a> &nbsp;·&nbsp; <a href="#" id="logoutLink">Logout</a></span>
+  </header>
+  <main class="mt-wrap">
+    <h1 id="hello">My Trips</h1>
+    <p class="mt-sub">Mee trips, package bookings, saved destinations anni database nunchi vasthayi.</p>
+    <section class="mt-card"><h2>Planned Trips</h2><div id="tripsBox">Loading…</div></section>
+    <section class="mt-card"><h2>Package Bookings</h2><div id="bookingsBox">Loading…</div></section>
+    <section class="mt-card"><h2>Refund History</h2><div id="refundBox">Loading…</div></section>
+    <section class="mt-card"><h2>Saved Destinations ♥</h2><div id="wishBox">Loading…</div></section>
+  </main>
+  <div class="pay-modal" id="payModal" hidden>
+    <div class="pay-box">
+      <h3>Complete payment</h3>
+      <p id="payInfo" class="pay-info"></p>
+      <label class="pm"><input type="radio" name="pm" value="card" checked /> Credit / Debit card</label>
+      <label class="pm"><input type="radio" name="pm" value="upi" /> UPI</label>
+      <label class="pm"><input type="radio" name="pm" value="netbanking" /> Net banking</label>
+      <p class="pay-note">Demo payment. Real money teesukodu.</p>
+      <div id="payMsg"></div>
+      <div class="pay-actions"><button id="payCancel" class="ghost">Cancel</button><button id="payGo" class="go">Pay now</button></div>
+    </div>
+  </div>
+  <div class="pay-modal" id="cancelModal" hidden>
+    <div class="pay-box">
+      <h3>Cancel booking</h3>
+      <p id="cancelInfo" class="pay-info"></p>
+      <p class="pay-note">Refund policy: 7 or more days before travel = 100% refund. 2 to 6 days = 50%. Less than 2 days = no refund. Unpaid bookings need no refund. (Refunds are simulated.)</p>
+      <p id="cancelEst" class="est"></p>
+      <select id="cancelReason"><option>Change of plans</option><option>Found a better price</option><option>Health or personal reasons</option><option>Other</option></select>
+      <div id="cancelMsg"></div>
+      <div class="pay-actions"><button id="cancelBack" class="ghost">Keep booking</button><button id="cancelGo" class="danger">Cancel booking</button></div>
+    </div>
+  </div>
+  <script src="js/my-trips.js"></script>
+</body>
+</html>

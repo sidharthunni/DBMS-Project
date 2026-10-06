@@ -1,0 +1,24 @@
+-- TripNest: destinations table ki flag, weather, duration
+USE tripnest;
+ALTER TABLE destinations ADD COLUMN flag VARCHAR(10), ADD COLUMN weather VARCHAR(60), ADD COLUMN duration VARCHAR(40);
+SET SQL_SAFE_UPDATES = 0;
+UPDATE destinations SET flag = '🇫🇷', weather = '18°C Mild', duration = '5 Days' WHERE name = 'Paris';
+UPDATE destinations SET flag = '🇮🇹', weather = '24°C Warm', duration = '4 Days' WHERE name = 'Rome';
+UPDATE destinations SET flag = '🇬🇷', weather = '26°C Sunny', duration = '6 Days' WHERE name = 'Santorini';
+UPDATE destinations SET flag = '🇨🇭', weather = '-2°C Snow', duration = '7 Days' WHERE name = 'Swiss Alps';
+UPDATE destinations SET flag = '🇮🇹', weather = '21°C Mild', duration = '3 Days' WHERE name = 'Venice';
+UPDATE destinations SET flag = '🇮🇹', weather = '23°C Sunny', duration = '4 Days' WHERE name = 'Florence';
+UPDATE destinations SET flag = '🇬🇧', weather = '19°C Mild', duration = '5 Days' WHERE name = 'London';
+UPDATE destinations SET flag = '🇪🇸', weather = '25°C Sunny', duration = '5 Days' WHERE name = 'Barcelona';
+UPDATE destinations SET flag = '🇮🇩', weather = '28°C Warm', duration = '7 Days' WHERE name = 'Bali';
+UPDATE destinations SET flag = '🇯🇵', weather = '19°C Spring', duration = '5 Days' WHERE name = 'Kyoto';
+UPDATE destinations SET flag = '🇯🇵', weather = '16°C Clear', duration = '6 Days' WHERE name = 'Tokyo';
+UPDATE destinations SET flag = '🇲🇻', weather = '29°C Sunny', duration = '5 Days' WHERE name = 'Maldives';
+UPDATE destinations SET flag = '🇦🇪', weather = '27°C Sunny', duration = '5 Days' WHERE name = 'Dubai';
+UPDATE destinations SET flag = '🇺🇸', weather = '22°C Clear', duration = '5 Days' WHERE name = 'New York';
+UPDATE destinations SET flag = '🇨🇦', weather = '20°C Fresh', duration = '6 Days' WHERE name = 'Banff';
+UPDATE destinations SET flag = '🇵🇪', weather = '18°C Mild', duration = '5 Days' WHERE name = 'Machu Picchu';
+UPDATE destinations SET flag = '🇧🇷', weather = '29°C Sunny', duration = '6 Days' WHERE name = 'Rio de Janeiro';
+UPDATE destinations SET flag = '🇹🇿', weather = '26°C Dry', duration = '7 Days' WHERE name = 'Serengeti';
+UPDATE destinations SET flag = '🇦🇺', weather = '23°C Sunny', duration = '6 Days' WHERE name = 'Sydney';
+SET SQL_SAFE_UPDATES = 1;

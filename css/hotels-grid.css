@@ -1,0 +1,16 @@
+.hotels-section{padding:90px 0;background:#F8FAFC}
+.hotels-section .container{max-width:1200px;margin:0 auto;padding:0 5%}
+.hotels-section h2{font-size:34px;color:#1E293B;margin:8px 0 6px}
+.hotels-section .hs-sub{color:#64748B;margin-bottom:32px}
+.hs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+.hs-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(15,23,42,.08);text-decoration:none;color:inherit;transition:transform .25s,box-shadow .25s;display:block}
+.hs-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(37,99,235,.18)}
+.hs-card img{width:100%;height:210px;object-fit:cover;display:block}
+.hs-body{padding:18px}
+.hs-body h3{font-size:18px;margin-bottom:4px}
+.hs-loc{color:#64748B;font-size:14px;margin-bottom:10px}
+.hs-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.hs-badges span{background:#DBEAFE;color:#1D4ED8;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px}
+.hs-foot{display:flex;justify-content:space-between;align-items:center}
+.hs-price{font-weight:700;color:#2563EB;font-size:18px}.hs-price small{color:#64748B;font-weight:400;font-size:13px}
+.hs-rate{font-weight:600}
