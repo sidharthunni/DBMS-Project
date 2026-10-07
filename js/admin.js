@@ -1,6 +1,8 @@
 /* TripNest - Admin dashboard (data database nunchi, admin key tho protected) */
 (function () {
-  const API = '';
+  const API = (typeof window !== 'undefined' && (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '3000')))
+    ? 'http://localhost:3000'
+    : '';
   const esc = (v) => String(v ?? '—').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const day = (d) => (d ? String(d).slice(0, 10) : '—');
 

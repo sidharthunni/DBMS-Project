@@ -3,7 +3,9 @@
  * Server same origin nunchi serve avthundi kabatti API = '' (relative URLs).
  * Frontend ni separate ga (Live Server) run chesthe: const API = 'http://localhost:3000';
  */
-const API = '';
+const API = (typeof window !== 'undefined' && (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '3000')))
+  ? 'http://localhost:3000'
+  : '';
 
 async function apiCall(path, method = 'GET', body) {
   const res = await fetch(API + path, {
@@ -118,10 +120,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------- packages.html: booking modal ----------
   const bookingForm = document.getElementById('bookingForm');
   if (bookingForm) {
-    bookingForm.addEventListener('submit', async () => {
+    bookingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
       const user = currentUser();
       if (!user) return requireLogin();
       const dateInput = bookingForm.querySelector('input[type="date"]');
+      if (!dateInput || !dateInput.value) {
+        alert('Please select a valid travel date.');
+        return;
+      }
       try {
         await apiCall('/api/book-by-name', 'POST', {
           user_id: user.user_id,
@@ -129,9 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
           travel_date: dateInput.value,
           travelers: 1
         });
-        alert('Booking request saved!');
+        alert('Booking request saved successfully!');
       } catch (err) {
-        alert('Booking fail ayindi: ' + err.message);
+        alert('Booking failed: ' + err.message);
       }
     });
   }

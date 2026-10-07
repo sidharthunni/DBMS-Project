@@ -40,7 +40,7 @@ module.exports = (app, db, wrap, auth, adminOnly, session) => {
     if (num(q.max) !== null) { where.push(`${cfg.price} <= ?`); args.push(num(q.max)); }
     if (num(q.rating) !== null) { where.push('rating >= ?'); args.push(num(q.rating)); }
     (cfg.eq || []).forEach((f) => { if (q[f]) { where.push(`${f} = ?`); args.push(q[f]); } });
-    const sort = Object.hasOwn(cfg.sorts, q.sort) ? cfg.sorts[q.sort] : cfg.sorts.default;
+    const sort = (q.sort && Object.prototype.hasOwnProperty.call(cfg.sorts, q.sort)) ? cfg.sorts[q.sort] : cfg.sorts.default;
     const [rows] = await db.query(
       `SELECT * FROM ${table}${where.length ? ' WHERE ' + where.join(' AND ') : ''} ORDER BY ${sort} LIMIT 100`, args);
     res.json(rows);

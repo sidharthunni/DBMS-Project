@@ -18,10 +18,11 @@ const FRONTEND_DIR = process.env.FRONTEND_DIR ||
 app.use(express.static(FRONTEND_DIR));
 
 const db = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: process.env.DB_PASS,
-  database: 'tripnest',
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASS !== undefined ? process.env.DB_PASS : '',
+  database: process.env.DB_NAME || 'tripnest',
   waitForConnections: true,
   dateStrings: true, // DATE columns 'YYYY-MM-DD' strings ga vastayi (timezone valla 1 roju taggakunda)
   connectionLimit: 10
@@ -111,6 +112,8 @@ app.post('/api/plan-trip', wrap(async (req, res) => {
   const { user_id, destination, hotel, hotel_price, package_tier, travelers, budget, start_date, end_date } = req.body;
   if (!user_id || !destination || !start_date || !end_date)
     return res.status(400).json({ error: 'Destination and dates are required' });
+  if (new Date(end_date) < new Date(start_date))
+    return res.status(400).json({ error: 'End date must be on or after start date' });
 
   // "Santorini, Greece" => name + country
   const [destName, ...rest] = destination.split(',').map((x) => x.trim());
@@ -145,8 +148,8 @@ app.get('/api/users/:id/trips', wrap(async (req, res) => {
   res.json(rows);
 }));
 
-app.delete('/api/trips/:id', wrap(async (req, res) => {
-  await db.query('DELETE FROM trips WHERE trip_id = ?', [req.params.id]);
+app.delete('/api/trips/:id', auth, wrap(async (req, res) => {
+  await db.query('DELETE FROM trips WHERE trip_id = ? AND user_id = ?', [req.params.id, req.user.user_id]);
   res.json({ message: 'Trip deleted' });
 }));
 
@@ -233,4 +236,5 @@ app.patch('/api/admin/bookings/:id', adminOnly, wrap(async (req, res) => {
 
    require('./extra-routes')(app, db, wrap, auth, adminOnly, session);
 
-app.listen(3000, () => console.log('TripNest running at http://localhost:3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`TripNest running at http://localhost:${PORT}`));
