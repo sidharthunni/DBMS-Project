@@ -255,6 +255,7 @@
           <div class="tn-pill compound" data-cmd="Fill reservation details">Fill Details (18 Oct - 20 Oct)</div>
           <div class="tn-pill compound" data-cmd="Reserve this room">Reserve This Room</div>
           <div class="tn-pill compound" data-cmd="Complete payment">Complete Payment ($582.40)</div>
+          <div class="tn-pill compound" data-cmd="Open GPay">GPay (Google Pay)</div>
         </div>
         <div class="tn-pill-title" style="margin-top:4px;">Quick Navigation:</div>
         <div class="tn-pill-row">
@@ -579,6 +580,15 @@
         });
         return;
       }
+    }
+
+    // 7. Specialized Presentation Pathway: GPay / Google Pay
+    if (lower.includes('gpay') || lower.includes('google pay')) {
+      replyEl.innerHTML = 'TripNest AI: Redirecting to Google Pay website...';
+      speakText('Redirecting to Google Pay.', () => {
+        window.location.href = 'https://pay.google.com/';
+      });
+      return;
     }
 
     // 7. Navigation to Destinations

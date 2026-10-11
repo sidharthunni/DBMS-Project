@@ -690,6 +690,19 @@ window.hotelsReady.then(function () {
       });
     });
 
+    // UPI App Redirects (GPay, PhonePe, Paytm, BHIM)
+    document.querySelectorAll(".upi-app").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const url = btn.dataset.url || "https://pay.google.com/";
+        const name = btn.textContent.trim();
+        btn.style.opacity = "0.7";
+        showToast(`Redirecting to ${name}...`);
+        setTimeout(() => {
+          window.location.href = url;
+        }, 350);
+      });
+    });
+
     // Complete Payment Execution
     const btnPay = document.getElementById("btnCompletePayment");
     if (btnPay) {
