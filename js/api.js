@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
           fullname: f('fullname'), email: f('email'), phone: f('phone'),
           subject: f('subject'), message: f('message')
         });
-        alert('Thanks! Mee message pampinchamu.');
+        alert('Thank you! Your message has been sent successfully.');
         contactForm.reset();
       } catch (err) {
         alert(err.message);
@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ============================================================
    PLAN-TRIP + PACKAGES BOOKING
-   Mee plan-trip.js / packages.js ni touch cheyakunda, DOM nunchi values chaduvutham.
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   function requireLogin() {
@@ -99,6 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const start = document.getElementById('startDate').value;
       const end = document.getElementById('endDate').value;
       if (!dest || !start || !end) return; // frontend already validates required steps
+      const tripData = {
+        trip_id: Date.now(),
+        destination: dest.dataset.value,
+        country: 'Featured',
+        hotel: hotel ? hotel.dataset.value : 'Selected Hotel',
+        package_name: pkg ? pkg.dataset.value : 'Custom',
+        travelers: document.getElementById('travelers').value,
+        budget: Number(document.getElementById('budgetSlider').value),
+        start_date: start,
+        end_date: end,
+        duration_days: Math.max(1, Math.round((new Date(end) - new Date(start)) / 864e5)),
+        status: 'confirmed'
+      };
       try {
         await apiCall('/api/plan-trip', 'POST', {
           user_id: user.user_id,
@@ -112,7 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
           end_date: end
         });
       } catch (err) {
-        alert('Trip save cheyadam fail ayindi: ' + err.message);
+        // Fallback: save to localStorage for offline / GitHub Pages demo
+        try {
+          const list = JSON.parse(localStorage.getItem('tripnest_planned_trips') || '[]');
+          list.unshift(tripData);
+          localStorage.setItem('tripnest_planned_trips', JSON.stringify(list));
+        } catch (e) {}
       }
     });
   }
