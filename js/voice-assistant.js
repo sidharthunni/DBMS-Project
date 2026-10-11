@@ -1,7 +1,7 @@
 /**
- * TripNest AI Voice Assistant
+ * TripNest AI Voice Assistant (v2 - Multi-Field Compound Voice Parser)
  * Hands-free Voice Search, Speech Navigation & Conversational Agent
- * Uses Web Speech Recognition (STT) + Web Speech Synthesis (TTS)
+ * Supports: "Search Paris 24 October 26 October 2" auto-populating Destination, CheckIn, CheckOut, Guests!
  */
 (function() {
   'use strict';
@@ -56,9 +56,9 @@
       position: fixed;
       bottom: 96px;
       right: 26px;
-      width: 360px;
+      width: 380px;
       max-width: calc(100vw - 32px);
-      background: rgba(15, 23, 42, 0.94);
+      background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -142,7 +142,7 @@
       justify-content: center;
       gap: 4px;
       height: 24px;
-      margin: 4px 0;
+      margin: 2px 0;
     }
     .tn-wave-bar {
       width: 3.5px;
@@ -167,7 +167,7 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
       padding: 12px;
-      min-height: 52px;
+      min-height: 54px;
       font-size: 13px;
       line-height: 1.5;
     }
@@ -186,14 +186,27 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      line-height: 1.4;
     }
 
     /* Command Pills / Suggestions */
     .tn-vc-suggestions {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: 6px;
       margin-top: 4px;
+    }
+    .tn-pill-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tn-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
     }
     .tn-pill {
       background: rgba(255, 255, 255, 0.06);
@@ -211,11 +224,24 @@
       border-color: rgba(56, 189, 248, 0.4);
       color: #38bdf8;
     }
+    .tn-pill.compound {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: rgba(56, 189, 248, 0.25);
+      color: #7dd3fc;
+      font-weight: 500;
+    }
     .tn-vc-hint {
       font-size: 10px;
       color: #64748b;
       text-align: center;
       margin-top: 2px;
+    }
+
+    /* Input Glow Highlights */
+    .tn-glow-active {
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.5) !important;
+      border-color: #38bdf8 !important;
+      transition: all 0.3s ease !important;
     }
   `;
   document.head.appendChild(style);
@@ -255,19 +281,30 @@
       </div>
 
       <div class="tn-vc-speech-box">
-        <div class="tn-vc-heard" id="tnHeard">Speak now... (e.g. "Search Paris", "Show Hotels")</div>
+        <div class="tn-vc-heard" id="tnHeard">Speak now... e.g. "Search Paris 24 October 26 October 2"</div>
         <div class="tn-vc-reply" id="tnReply" style="display:none;"></div>
       </div>
 
       <div class="tn-vc-suggestions">
-        <div class="tn-pill" data-cmd="Search Paris">Search Paris</div>
-        <div class="tn-pill" data-cmd="Show Packages">Show Packages</div>
-        <div class="tn-pill" data-cmd="Show Hotels">Explore Hotels</div>
-        <div class="tn-pill" data-cmd="Plan My Trip">Plan Trip</div>
-        <div class="tn-pill" data-cmd="My Bookings">My Bookings</div>
+        <div class="tn-pill-title">Try Multi-Field Voice Commands:</div>
+        <div class="tn-pill-row">
+          <div class="tn-pill compound" data-cmd="Search Paris 24 October 26 October 2">Paris 24 Oct - 26 Oct (2)</div>
+          <div class="tn-pill compound" data-cmd="Find Bali 15 November 20 November 4">Bali 15 Nov - 20 Nov (4)</div>
+          <div class="tn-pill compound" data-cmd="Book Tokyo 5 December 10 December 3">Tokyo 5 Dec - 10 Dec (3)</div>
+          <div class="tn-pill compound" data-cmd="Search Santorini 12 October 18 October 2">Santorini 12 Oct - 18 Oct (2)</div>
+          <div class="tn-pill compound" data-cmd="Plan trip Rome 10 November 15 November 2">Rome 10 Nov - 15 Nov (2)</div>
+        </div>
+
+        <div class="tn-pill-title" style="margin-top:4px;">Quick Navigation:</div>
+        <div class="tn-pill-row">
+          <div class="tn-pill" data-cmd="Show Packages">Packages</div>
+          <div class="tn-pill" data-cmd="Show Hotels">Hotels</div>
+          <div class="tn-pill" data-cmd="Plan My Trip">Plan Trip</div>
+          <div class="tn-pill" data-cmd="My Bookings">My Bookings</div>
+        </div>
       </div>
 
-      <div class="tn-vc-hint">Tip: Click any pill or say it aloud for hands-free voice control.</div>
+      <div class="tn-vc-hint">Say aloud or click any command to auto-fill all search fields.</div>
     </div>
   `;
   document.body.appendChild(container);
@@ -284,6 +321,29 @@
   let isListening = false;
   let recognition = null;
 
+  // Month lookup dictionary
+  const monthMap = {
+    'january': '01', 'jan': '01',
+    'february': '02', 'feb': '02',
+    'march': '03', 'mar': '03',
+    'april': '04', 'apr': '04',
+    'may': '05',
+    'june': '06', 'jun': '06',
+    'july': '07', 'jul': '07',
+    'august': '08', 'aug': '08',
+    'september': '09', 'sep': '09', 'sept': '09',
+    'october': '10', 'oct': '10',
+    'november': '11', 'nov': '11',
+    'december': '12', 'dec': '12'
+  };
+
+  const monthRegexStr = Object.keys(monthMap).join('|');
+
+  // Word number map
+  const wordNumMap = {
+    'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10
+  };
+
   // Initialize Speech Recognition
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -299,7 +359,7 @@
       voiceCard.classList.add('active');
       statusText.innerText = 'Listening';
       liveBadge.style.color = '#34d399';
-      heardEl.innerHTML = 'Listening to your command...';
+      heardEl.innerHTML = 'Listening to your voice command...';
       replyEl.style.display = 'none';
     };
 
@@ -331,7 +391,7 @@
         heardEl.innerHTML = '<span style="color:#f87171;">Microphone access denied. Please allow mic in browser settings.</span>';
         speakText('Please allow microphone permissions to use voice search.');
       } else {
-        heardEl.innerHTML = 'Didn\'t catch that. Try saying "Search Paris" or "Show Hotels".';
+        heardEl.innerHTML = 'Didn\'t catch that. Try saying "Search Paris 24 October 26 October 2".';
       }
       stopListening();
     };
@@ -371,7 +431,6 @@
     utterance.pitch = 1.0;
     utterance.lang = 'en-US';
 
-    // Pick pleasant English voice if available
     const voices = window.speechSynthesis.getVoices();
     const naturalVoice = voices.find(v => (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Karen')) && v.lang.startsWith('en'));
     if (naturalVoice) utterance.voice = naturalVoice;
@@ -382,18 +441,63 @@
     window.speechSynthesis.speak(utterance);
   }
 
+  // Helper to format date YYYY-MM-DD
+  function toISODate(dayStr, monthStr, year = '2026') {
+    const day = parseInt(dayStr, 10);
+    const dayPad = (day < 10 ? '0' : '') + day;
+    const monthPad = monthMap[monthStr.toLowerCase()] || '10';
+    return `${year}-${monthPad}-${dayPad}`;
+  }
+
+  // Multi-Field Compound Command Parser
+  function tryParseCompoundCommand(lower) {
+    // Regex Pattern: (search|find|book|plan trip|explore) <city> (from)? <day1> <month1> (to)? <day2> <month2> (for)? <guests> (guests)?
+    const compoundRegex = new RegExp(
+      '(?:search|find|book|plan trip to|plan trip|explore)?\\s*([a-z]+)\\s*(?:from)?\\s*(\\d{1,2})\\s*(' + monthRegexStr + ')\\s*(?:to)?\\s*(\\d{1,2})\\s*(' + monthRegexStr + ')(?:\\s*(?:for)?\\s*(\\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten)?\\s*(?:guests?|people|travelers?)?)?',
+      'i'
+    );
+
+    const match = lower.match(compoundRegex);
+    if (match && match[2] && match[3] && match[4] && match[5]) {
+      const city = match[1].trim();
+      // Avoid matching keywords as cities
+      if (['hotel', 'hotels', 'package', 'packages', 'destination', 'destinations'].includes(city)) return null;
+
+      const d1 = match[2];
+      const m1 = match[3];
+      const d2 = match[4];
+      const m2 = match[5];
+      let rawGuests = match[6];
+      let guests = 2;
+      if (rawGuests) {
+        guests = wordNumMap[rawGuests.toLowerCase()] || parseInt(rawGuests, 10) || 2;
+      }
+
+      const checkInISO = toISODate(d1, m1);
+      const checkOutISO = toISODate(d2, m2);
+
+      return {
+        city: city.charAt(0).toUpperCase() + city.slice(1),
+        checkIn: checkInISO,
+        checkOut: checkOutISO,
+        guests: guests,
+        summary: `${city.charAt(0).toUpperCase() + city.slice(1)} (${d1} ${m1} - ${d2} ${m2}, ${guests} guests)`
+      };
+    }
+    return null;
+  }
+
   // Command Execution Engine
   function handleVoiceCommand(cmd) {
     const lower = cmd.toLowerCase().trim();
     replyEl.style.display = 'block';
 
-    // 1. Search Destination (e.g. "Search Paris", "Find Bali", "Trip to Tokyo")
-    const destMatch = lower.match(/(?:search|find|explore|trip to|go to|visit)\s+([a-z\s]+)/i);
-    if (destMatch && destMatch[1] && !lower.includes('package') && !lower.includes('hotel') && !lower.includes('destinations')) {
-      const targetCity = destMatch[1].trim();
-      replyEl.innerHTML = `TripNest AI: Searching trips to <b>${targetCity.toUpperCase()}</b>...`;
-      speakText(`Searching destinations and trips to ${targetCity}.`, () => {
-        executeDestinationSearch(targetCity);
+    // 1. Check for Compound Travel Command (e.g. "search paris 24 october 26 october 2")
+    const compound = tryParseCompoundCommand(lower);
+    if (compound) {
+      replyEl.innerHTML = `TripNest AI: Found trip for <b>${compound.guests} guests</b> to <b>${compound.city}</b> (${compound.checkIn} to ${compound.checkOut})`;
+      speakText(`Searching trip to ${compound.city} for ${compound.guests} guests from ${compound.checkIn} to ${compound.checkOut}.`, () => {
+        executeCompoundSearch(compound);
       });
       return;
     }
@@ -468,11 +572,13 @@
       return;
     }
 
-    // 9. Home page
-    if (lower.includes('home') || lower.includes('landing') || lower.includes('main page')) {
-      replyEl.innerHTML = 'TripNest AI: Returning to homepage...';
-      speakText('Returning to homepage.', () => {
-        window.location.href = 'index.html';
+    // 9. Single City Search (e.g. "Search Paris", "Find Bali", "Trip to Tokyo")
+    const destMatch = lower.match(/(?:search|find|explore|trip to|go to|visit)\s+([a-z\s]+)/i);
+    if (destMatch && destMatch[1] && !lower.includes('package') && !lower.includes('hotel')) {
+      const targetCity = destMatch[1].trim();
+      replyEl.innerHTML = `TripNest AI: Searching trips to <b>${targetCity.toUpperCase()}</b>...`;
+      speakText(`Searching destinations and trips to ${targetCity}.`, () => {
+        executeDestinationSearch(targetCity);
       });
       return;
     }
@@ -493,8 +599,8 @@
 
     // 11. Conversational Queries & Help
     if (lower.includes('who are you') || lower.includes('what are you') || lower.includes('hello') || lower.includes('hi') || lower.includes('help')) {
-      replyEl.innerHTML = 'TripNest AI: I am your AI travel copilot. Ask me to search cities, view packages, or open hotels!';
-      speakText('Hello! I am your TripNest voice assistant. You can tell me to search destinations like Paris, show tour packages, browse luxury hotels, or view your bookings.');
+      replyEl.innerHTML = 'TripNest AI: I am your AI travel copilot. Ask me to search cities with dates, view packages, or open hotels!';
+      speakText('Hello! I am your TripNest voice assistant. Try saying: Search Paris 24 October 26 October 2, or show tour packages.');
       return;
     }
 
@@ -505,15 +611,66 @@
     });
   }
 
+  // Execute Compound Multi-Field Search
+  function executeCompoundSearch(data) {
+    const destInput = document.getElementById('searchDestination');
+    const checkInInput = document.getElementById('searchCheckIn');
+    const checkOutInput = document.getElementById('searchCheckOut');
+    const guestsInput = document.getElementById('searchGuests');
+
+    if (destInput) {
+      // 1. Populate Destination
+      destInput.value = data.city;
+      destInput.classList.add('tn-glow-active');
+
+      // 2. Populate Dates
+      if (checkInInput) {
+        checkInInput.value = data.checkIn;
+        checkInInput.classList.add('tn-glow-active');
+      }
+      if (checkOutInput) {
+        checkOutInput.value = data.checkOut;
+        checkOutInput.classList.add('tn-glow-active');
+      }
+
+      // 3. Populate Guests
+      if (guestsInput) {
+        guestsInput.value = data.guests;
+        guestsInput.classList.add('tn-glow-active');
+      }
+
+      // Remove glow after 3.5s
+      setTimeout(() => {
+        destInput.classList.remove('tn-glow-active');
+        if (checkInInput) checkInInput.classList.remove('tn-glow-active');
+        if (checkOutInput) checkOutInput.classList.remove('tn-glow-active');
+        if (guestsInput) guestsInput.classList.remove('tn-glow-active');
+      }, 3500);
+
+      // Scroll search card into view smoothly
+      const searchCard = document.getElementById('searchCard');
+      if (searchCard) {
+        searchCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Trigger search if submit button exists
+      const searchBtn = document.querySelector('.search-card__submit') || document.querySelector('#searchCard button[type="submit"]');
+      if (searchBtn) {
+        setTimeout(() => { searchBtn.click(); }, 600);
+      }
+    } else {
+      // If on another page, navigate to destinations
+      window.location.href = `destinations.html?search=${encodeURIComponent(data.city)}`;
+    }
+  }
+
   function executeDestinationSearch(term) {
     const destInput = document.getElementById('searchDestination');
     if (destInput) {
       destInput.value = term;
       destInput.focus();
-      // Animate highlight
-      destInput.style.transition = 'all 0.3s ease';
-      destInput.style.boxShadow = '0 0 0 4px rgba(56, 189, 248, 0.4)';
-      setTimeout(() => { destInput.style.boxShadow = ''; }, 2000);
+      destInput.classList.add('tn-glow-active');
+      setTimeout(() => { destInput.classList.remove('tn-glow-active'); }, 2500);
 
       const searchBtn = document.querySelector('.search-card__submit') || document.querySelector('#searchCard button[type="submit"]');
       if (searchBtn) {
@@ -523,7 +680,6 @@
         if (destSec) destSec.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      // If on another page without the hero search, navigate to destinations with query
       window.location.href = `destinations.html?search=${encodeURIComponent(term)}`;
     }
   }
