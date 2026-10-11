@@ -246,6 +246,42 @@
   `;
   document.head.appendChild(style);
 
+  function getSuggestionsHtml() {
+    const isHotelDetails = window.location.pathname.includes('hotels-details.html');
+    if (isHotelDetails) {
+      return `
+        <div class="tn-pill-title">Swiss Reservation Commands:</div>
+        <div class="tn-pill-row">
+          <div class="tn-pill compound" data-cmd="Fill reservation details">Fill Details (18 Oct - 20 Oct)</div>
+          <div class="tn-pill compound" data-cmd="Reserve this room">Reserve This Room</div>
+          <div class="tn-pill compound" data-cmd="Complete payment">Complete Payment ($582.40)</div>
+        </div>
+        <div class="tn-pill-title" style="margin-top:4px;">Quick Navigation:</div>
+        <div class="tn-pill-row">
+          <div class="tn-pill" data-cmd="Plan my trip to Europe">Plan Trip to Europe</div>
+          <div class="tn-pill" data-cmd="Take me to Switzerland">Switzerland Hotel</div>
+          <div class="tn-pill" data-cmd="My Bookings">My Trips</div>
+        </div>
+      `;
+    }
+    return `
+      <div class="tn-pill-title">Suggested Voice Commands:</div>
+      <div class="tn-pill-row">
+        <div class="tn-pill compound" data-cmd="Plan my trip to Europe">Plan trip to Europe</div>
+        <div class="tn-pill compound" data-cmd="Take me to Switzerland">Take me to Switzerland</div>
+        <div class="tn-pill compound" data-cmd="Search Paris 24 October 26 October 2">Paris 24 Oct - 26 Oct (2)</div>
+        <div class="tn-pill compound" data-cmd="Find Bali 15 November 20 November 4">Bali 15 Nov - 20 Nov (4)</div>
+      </div>
+      <div class="tn-pill-title" style="margin-top:4px;">Quick Navigation:</div>
+      <div class="tn-pill-row">
+        <div class="tn-pill" data-cmd="Show Hotels">Hotels</div>
+        <div class="tn-pill" data-cmd="Plan My Trip">Plan Trip</div>
+        <div class="tn-pill" data-cmd="Show Packages">Packages</div>
+        <div class="tn-pill" data-cmd="My Bookings">My Bookings</div>
+      </div>
+    `;
+  }
+
   // Inject DOM Elements
   const container = document.createElement('div');
   container.id = 'tripnest-voice-assistant-root';
@@ -281,30 +317,15 @@
       </div>
 
       <div class="tn-vc-speech-box">
-        <div class="tn-vc-heard" id="tnHeard">Speak now... e.g. "Search Paris 24 October 26 October 2"</div>
+        <div class="tn-vc-heard" id="tnHeard">Speak now... e.g. "Plan my trip to Europe" or "Take me to Switzerland"</div>
         <div class="tn-vc-reply" id="tnReply" style="display:none;"></div>
       </div>
 
-      <div class="tn-vc-suggestions">
-        <div class="tn-pill-title">Try Multi-Field Voice Commands:</div>
-        <div class="tn-pill-row">
-          <div class="tn-pill compound" data-cmd="Search Paris 24 October 26 October 2">Paris 24 Oct - 26 Oct (2)</div>
-          <div class="tn-pill compound" data-cmd="Find Bali 15 November 20 November 4">Bali 15 Nov - 20 Nov (4)</div>
-          <div class="tn-pill compound" data-cmd="Book Tokyo 5 December 10 December 3">Tokyo 5 Dec - 10 Dec (3)</div>
-          <div class="tn-pill compound" data-cmd="Search Santorini 12 October 18 October 2">Santorini 12 Oct - 18 Oct (2)</div>
-          <div class="tn-pill compound" data-cmd="Plan trip Rome 10 November 15 November 2">Rome 10 Nov - 15 Nov (2)</div>
-        </div>
-
-        <div class="tn-pill-title" style="margin-top:4px;">Quick Navigation:</div>
-        <div class="tn-pill-row">
-          <div class="tn-pill" data-cmd="Show Packages">Packages</div>
-          <div class="tn-pill" data-cmd="Show Hotels">Hotels</div>
-          <div class="tn-pill" data-cmd="Plan My Trip">Plan Trip</div>
-          <div class="tn-pill" data-cmd="My Bookings">My Bookings</div>
-        </div>
+      <div class="tn-vc-suggestions" id="tnSuggestions">
+        ${getSuggestionsHtml()}
       </div>
 
-      <div class="tn-vc-hint">Say aloud or click any command to auto-fill all search fields.</div>
+      <div class="tn-vc-hint">Say aloud or click any command to perform action hands-free.</div>
     </div>
   `;
   document.body.appendChild(container);
@@ -502,7 +523,65 @@
       return;
     }
 
-    // 2. Navigation to Destinations
+    // 2. Specialized Presentation Pathway: Europe Trip -> Hotels
+    if (lower.includes('europe') || (lower.includes('plan') && lower.includes('europe'))) {
+      replyEl.innerHTML = 'TripNest AI: Planning your trip to Europe. Opening luxury hotels and stays...';
+      speakText('Planning your trip to Europe. Exploring available hotels.', () => {
+        window.location.href = 'hotels.html';
+      });
+      return;
+    }
+
+    // 3. Specialized Presentation Pathway: Switzerland / Swiss Alps -> hotels-details.html?id=4
+    if (lower.includes('switzerland') || lower.includes('swiss') || lower.includes('zermatt') || lower.includes('alpine summit') || lower.includes('hotel 4')) {
+      replyEl.innerHTML = 'TripNest AI: Taking you to Alpine Summit Lodge in Zermatt, Switzerland...';
+      speakText('Navigating to Alpine Summit Lodge in Zermatt, Switzerland.', () => {
+        window.location.href = 'hotels-details.html?id=4';
+      });
+      return;
+    }
+
+    // 4. Specialized Presentation Pathway: Fill details (18 Oct - 20 Oct)
+    if (lower.includes('fill') || lower.includes('second pic') || lower.includes('pic') || (lower.includes('18') && lower.includes('20'))) {
+      if (typeof window.tnFillSwissBooking === 'function') {
+        const ok = window.tnFillSwissBooking();
+        if (ok) {
+          replyEl.innerHTML = 'TripNest AI: Populated reservation for <b>2 Adults</b> (18/10/2026 to 20/10/2026). Total: <b>$582.40</b>';
+          speakText('Filled reservation for 2 adults from October 18 to October 20 at Alpine Summit Lodge. Total is 582 dollars and 40 cents.');
+          return;
+        }
+      } else {
+        replyEl.innerHTML = 'TripNest AI: Opening Alpine Summit Lodge with prefilled reservation...';
+        speakText('Opening Alpine Summit Lodge with prefilled reservation.', () => {
+          window.location.href = 'hotels-details.html?id=4&autofill=true';
+        });
+        return;
+      }
+    }
+
+    // 5. Specialized Presentation Pathway: Reserve Room -> Open Payment Checkout
+    if (lower.includes('reserve') || lower.includes('hold room')) {
+      if (typeof window.tnTriggerReserveRoom === 'function') {
+        replyEl.innerHTML = 'TripNest AI: Reserving Deluxe Room. Opening payment details...';
+        speakText('Reserving Deluxe Room. Opening payment details.', () => {
+          window.tnTriggerReserveRoom();
+        });
+        return;
+      }
+    }
+
+    // 6. Specialized Presentation Pathway: Complete Payment
+    if (lower.includes('complete payment') || lower.includes('pay now') || lower.includes('pay 582') || lower === 'pay') {
+      if (typeof window.tnCompleteHotelPayment === 'function') {
+        replyEl.innerHTML = 'TripNest AI: Processing payment of $582.40...';
+        speakText('Processing payment of 582 dollars and 40 cents.', () => {
+          window.tnCompleteHotelPayment();
+        });
+        return;
+      }
+    }
+
+    // 7. Navigation to Destinations
     if (lower.includes('destination') || lower.includes('places') || lower.includes('explore all')) {
       replyEl.innerHTML = 'TripNest AI: Opening global destinations catalog...';
       speakText('Opening destinations catalog.', () => {
@@ -511,7 +590,7 @@
       return;
     }
 
-    // 3. Navigation to Packages
+    // 8. Navigation to Packages
     if (lower.includes('package') || lower.includes('tour') || lower.includes('vacation')) {
       replyEl.innerHTML = 'TripNest AI: Loading vacation and tour packages...';
       speakText('Loading popular vacation packages.', () => {
@@ -701,13 +780,16 @@
     stopListening();
   });
 
-  // Suggestion Pills Click Handler
-  document.querySelectorAll('.tn-pill').forEach(pill => {
-    pill.addEventListener('click', (e) => {
-      const cmd = e.target.getAttribute('data-cmd');
-      heardEl.innerHTML = `Selected: <span class="recognized">"${cmd}"</span>`;
-      handleVoiceCommand(cmd);
-    });
+  // Suggestion Pills Click Handler (delegated)
+  container.addEventListener('click', (e) => {
+    const pill = e.target.closest('.tn-pill');
+    if (pill) {
+      const cmd = pill.getAttribute('data-cmd');
+      if (cmd) {
+        heardEl.innerHTML = `Selected: <span class="recognized">"${cmd}"</span>`;
+        handleVoiceCommand(cmd);
+      }
+    }
   });
 
 })();

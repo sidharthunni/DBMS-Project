@@ -356,19 +356,125 @@
   </div>
 </div>
 
-<!-- ============ RESERVE / BOOK NOW CONFIRM MODAL ============ -->
+<!-- ============ RESERVE & PAYMENT MODAL ============ -->
 <div class="modal-overlay" id="bookModalOverlay">
-  <div class="modal-card modal-card--book" role="dialog" aria-modal="true" aria-label="Reservation summary">
+  <div class="modal-card modal-card--payment" role="dialog" aria-modal="true" aria-label="Reservation and payment">
     <button type="button" class="modal-card__close" id="bookModalClose" aria-label="Close">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
-    <div class="modal-card__icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+
+    <!-- STEP 1: PAYMENT FORM -->
+    <div id="paymentStepForm">
+      <div class="pay-header">
+        <span class="pay-badge">Secure Checkout</span>
+        <h3 id="payHotelName">Alpine Summit Lodge</h3>
+        <p id="payHotelLocation">Zermatt, Switzerland</p>
+      </div>
+
+      <div class="pay-summary-box" id="paySummaryBox">
+        <div class="ps-row"><span>Dates:</span><b id="payDates">18/10/2026 to 20/10/2026 (2 Nights)</b></div>
+        <div class="ps-row"><span>Guests:</span><b id="payGuests">2 Adults</b></div>
+        <div class="ps-row"><span>Room:</span><b id="payRoom">Deluxe Room ($260/night)</b></div>
+        <div class="ps-row ps-total"><span>Total Payable:</span><b id="payTotal">$582.40</b></div>
+      </div>
+
+      <div class="pay-tabs-title">Choose Payment Method:</div>
+      <div class="pay-tabs">
+        <button type="button" class="pay-tab-btn active" data-pm="upi">UPI / QR</button>
+        <button type="button" class="pay-tab-btn" data-pm="card">Card</button>
+        <button type="button" class="pay-tab-btn" data-pm="bank">Bank ID</button>
+      </div>
+
+      <!-- UPI Panel -->
+      <div class="pay-fields" id="payPanelUpi">
+        <div class="upi-apps">
+          <span class="upi-app">GPay</span>
+          <span class="upi-app">PhonePe</span>
+          <span class="upi-app">Paytm</span>
+          <span class="upi-app">BHIM</span>
+        </div>
+        <div class="pay-field">
+          <label for="upiIdInput">UPI ID / Virtual Address</label>
+          <div class="upi-input-wrap">
+            <input type="text" id="upiIdInput" value="sidharth@okaxis" placeholder="username@upi" />
+            <span class="upi-verified-badge">Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Panel -->
+      <div class="pay-fields" id="payPanelCard" style="display:none;">
+        <div class="pay-field">
+          <label for="cardNumInput">Card Number</label>
+          <input type="text" id="cardNumInput" value="4532 8920 1934 4242" placeholder="•••• •••• •••• ••••" />
+        </div>
+        <div class="pay-row-2">
+          <div class="pay-field">
+            <label for="cardExpInput">Expiry Date</label>
+            <input type="text" id="cardExpInput" value="10/28" placeholder="MM/YY" />
+          </div>
+          <div class="pay-field">
+            <label for="cardCvvInput">CVV</label>
+            <input type="password" id="cardCvvInput" value="834" placeholder="CVV" maxlength="4" />
+          </div>
+        </div>
+        <div class="pay-field">
+          <label for="cardNameInput">Cardholder Name</label>
+          <input type="text" id="cardNameInput" value="Sidharth Unnithan" placeholder="Full Name" />
+        </div>
+      </div>
+
+      <!-- Bank Panel -->
+      <div class="pay-fields" id="payPanelBank" style="display:none;">
+        <div class="pay-field">
+          <label for="bankSelect">Select Bank</label>
+          <select id="bankSelect">
+            <option>HDFC Bank</option>
+            <option>State Bank of India (SBI)</option>
+            <option>ICICI Bank</option>
+            <option>Axis Bank</option>
+            <option>Kotak Mahindra Bank</option>
+          </select>
+        </div>
+        <div class="pay-field">
+          <label for="bankAccInput">Bank Account ID / Customer ID</label>
+          <input type="text" id="bankAccInput" value="ACC-981249120" placeholder="Customer ID" />
+        </div>
+      </div>
+
+      <button type="button" class="pay-submit-btn" id="btnCompletePayment">
+        Complete Payment of $582.40
+      </button>
+
+      <div class="pay-trust">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>256-Bit SSL Encrypted &amp; ACID Protected</span>
+      </div>
     </div>
-    <h3>Room Held For You</h3>
-    <p class="modal-card__lead">Here's your reservation summary — continue to guest details and payment when you're ready.</p>
-    <div class="modal-card__summary" id="bookModalSummary"></div>
-    <p class="hd-booking-note" style="text-align:center;">Full guest-details, payment, and confirmation flow arrives in the next build phase.</p>
+
+    <!-- STEP 2: PAYMENT SUCCESS -->
+    <div id="paymentStepSuccess" class="pay-success-pane" style="display:none;">
+      <div class="pay-success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3>Reservation Confirmed!</h3>
+      <p>Your payment of <b id="successPaidAmt">$582.40</b> was successful. A confirmation has been logged to the database.</p>
+
+      <div class="pay-receipt">
+        <div class="pr-row"><span>Hotel:</span><b id="successHotel">Alpine Summit Lodge</b></div>
+        <div class="pr-row"><span>Location:</span><b id="successLocation">Zermatt, Switzerland</b></div>
+        <div class="pr-row"><span>Dates:</span><b id="successDates">18/10/2026 to 20/10/2026</b></div>
+        <div class="pr-row"><span>Guests:</span><b id="successGuests">2 Adults</b></div>
+        <div class="pr-row"><span>Reference:</span><b>TXN-58240-SWISS</b></div>
+        <div class="pr-row"><span>Status:</span><b style="color:#16a34a;">Paid &amp; Confirmed</b></div>
+      </div>
+
+      <div class="pay-actions">
+        <a href="my-trips.html" class="pay-btn-primary">View in My Trips</a>
+        <button type="button" class="pay-btn-secondary" id="btnDownloadReceipt">Download Receipt</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
