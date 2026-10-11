@@ -243,6 +243,111 @@
       border-color: #38bdf8 !important;
       transition: all 0.3s ease !important;
     }
+
+    /* Floating Fullscreen / Maximize Screen Button */
+    .tn-fullscreen-floating-btn {
+      position: fixed;
+      bottom: 26px;
+      right: 94px;
+      height: 48px;
+      padding: 0 16px 0 14px;
+      border-radius: 24px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      z-index: 99998;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Poppins, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+      user-select: none;
+    }
+    .tn-fullscreen-floating-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(30, 41, 59, 0.98);
+      border-color: rgba(56, 189, 248, 0.55);
+      color: #38bdf8;
+      box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.6), 0 0 14px rgba(56, 189, 248, 0.35);
+    }
+    .tn-fullscreen-floating-btn:active {
+      transform: scale(0.96);
+    }
+    .tn-fullscreen-floating-btn svg {
+      width: 17px;
+      height: 17px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    /* Navbar Fullscreen / Maximize Screen Button */
+    .tn-fullscreen-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(37, 99, 235, 0.12);
+      color: #2563eb;
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      transition: all 0.2s ease;
+      font-family: inherit;
+      outline: none;
+      user-select: none;
+      text-decoration: none;
+      margin-right: 6px;
+    }
+    .tn-fullscreen-nav-btn:hover {
+      background: #2563eb;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    .tn-fullscreen-nav-btn:active {
+      transform: scale(0.96);
+    }
+    .tn-fullscreen-nav-btn svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @media (max-width: 640px) {
+      .tn-fullscreen-floating-btn {
+        right: 86px;
+        bottom: 26px;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+      }
+      .tn-fullscreen-floating-btn .tn-fs-label {
+        display: none;
+      }
+      .tn-fullscreen-nav-btn .tn-fs-label {
+        display: none;
+      }
+    }
   `;
   document.head.appendChild(style);
 
@@ -257,8 +362,9 @@
           <div class="tn-pill compound" data-cmd="Complete payment">Complete Payment ($582.40)</div>
           <div class="tn-pill compound" data-cmd="Open GPay">GPay (Google Pay)</div>
         </div>
-        <div class="tn-pill-title" style="margin-top:4px;">Quick Navigation:</div>
+        <div class="tn-pill-title" style="margin-top:4px;">Quick Actions & Navigation:</div>
         <div class="tn-pill-row">
+          <div class="tn-pill compound" data-cmd="Maximize screen">Maximize Screen</div>
           <div class="tn-pill" data-cmd="Plan my trip to Europe">Plan Trip to Europe</div>
           <div class="tn-pill" data-cmd="Take me to Switzerland">Switzerland Hotel</div>
           <div class="tn-pill" data-cmd="My Bookings">My Trips</div>
@@ -273,8 +379,9 @@
         <div class="tn-pill compound" data-cmd="Search Paris 24 October 26 October 2">Paris 24 Oct - 26 Oct (2)</div>
         <div class="tn-pill compound" data-cmd="Find Bali 15 November 20 November 4">Bali 15 Nov - 20 Nov (4)</div>
       </div>
-      <div class="tn-pill-title" style="margin-top:4px;">Quick Navigation:</div>
+      <div class="tn-pill-title" style="margin-top:4px;">Quick Actions & Navigation:</div>
       <div class="tn-pill-row">
+        <div class="tn-pill compound" data-cmd="Maximize screen">Maximize Screen</div>
         <div class="tn-pill" data-cmd="Show Hotels">Hotels</div>
         <div class="tn-pill" data-cmd="Plan My Trip">Plan Trip</div>
         <div class="tn-pill" data-cmd="Show Packages">Packages</div>
@@ -287,6 +394,17 @@
   const container = document.createElement('div');
   container.id = 'tripnest-voice-assistant-root';
   container.innerHTML = `
+    <!-- Floating Fullscreen / Maximize Screen Button -->
+    <button class="tn-fullscreen-floating-btn tn-fs-toggle" id="tnFloatingFsBtn" title="Maximize Screen (Fullscreen View)" aria-label="Maximize Screen">
+      <svg class="tn-fs-icon-enter" viewBox="0 0 24 24">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+      </svg>
+      <svg class="tn-fs-icon-exit" viewBox="0 0 24 24" style="display:none;">
+        <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+      </svg>
+      <span class="tn-fs-label">Maximize</span>
+    </button>
+
     <button class="tn-voice-trigger" id="tnVoiceBtn" title="TripNest AI Voice Assistant" aria-label="TripNest Voice Search">
       <svg viewBox="0 0 24 24">
         <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
@@ -513,6 +631,22 @@
   function handleVoiceCommand(cmd) {
     const lower = cmd.toLowerCase().trim();
     replyEl.style.display = 'block';
+
+    // 0. Fullscreen / Maximize Screen Commands
+    if (lower.includes('maximize') || lower.includes('fullscreen') || lower.includes('full screen') || lower.includes('expand screen')) {
+      replyEl.innerHTML = 'TripNest AI: Maximizing screen to full view...';
+      speakText('Maximizing screen to full view.', () => {
+        toggleFullscreen(true);
+      });
+      return;
+    }
+    if (lower.includes('minimize screen') || lower.includes('exit fullscreen') || lower.includes('restore screen') || lower.includes('normal screen')) {
+      replyEl.innerHTML = 'TripNest AI: Restoring normal screen view...';
+      speakText('Restoring normal screen view.', () => {
+        toggleFullscreen(false);
+      });
+      return;
+    }
 
     // 1. Check for Compound Travel Command (e.g. "search paris 24 october 26 october 2")
     const compound = tryParseCompoundCommand(lower);
@@ -797,7 +931,136 @@
       const cmd = pill.getAttribute('data-cmd');
       if (cmd) {
         heardEl.innerHTML = `Selected: <span class="recognized">"${cmd}"</span>`;
+        if (cmd.toLowerCase().includes('maximize')) {
+          toggleFullscreen();
+          return;
+        }
         handleVoiceCommand(cmd);
+      }
+    }
+  });
+
+  // ==========================================
+  // FULLSCREEN / MAXIMIZE SCREEN SYSTEM
+  // ==========================================
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+  }
+
+  function toggleFullscreen(forceState) {
+    const currentlyFs = isFullscreen();
+    const shouldFs = typeof forceState === 'boolean' ? forceState : !currentlyFs;
+
+    if (shouldFs) {
+      const elem = document.documentElement;
+      const request = elem.requestFullscreen || elem.webkitRequestFullscreen || elem.mozRequestFullScreen || elem.msRequestFullscreen;
+      if (request) {
+        request.call(elem).catch((err) => {
+          console.warn('Fullscreen request:', err);
+        });
+      }
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+      if (exit) {
+        exit.call(document).catch((err) => {
+          console.warn('Fullscreen exit:', err);
+        });
+      }
+    }
+  }
+  window.tnToggleFullscreen = toggleFullscreen;
+
+  function updateFullscreenUI() {
+    const fsActive = isFullscreen();
+    const buttons = document.querySelectorAll('.tn-fs-toggle');
+    buttons.forEach((btn) => {
+      const label = btn.querySelector('.tn-fs-label');
+      const enterIcon = btn.querySelector('.tn-fs-icon-enter');
+      const exitIcon = btn.querySelector('.tn-fs-icon-exit');
+
+      if (fsActive) {
+        btn.setAttribute('title', 'Exit Fullscreen (Restore Normal View)');
+        btn.setAttribute('aria-label', 'Exit Fullscreen');
+        if (label) label.textContent = 'Exit';
+        if (enterIcon) enterIcon.style.display = 'none';
+        if (exitIcon) exitIcon.style.display = 'inline-block';
+        btn.classList.add('is-fullscreen');
+      } else {
+        btn.setAttribute('title', 'Maximize Screen (Fullscreen View)');
+        btn.setAttribute('aria-label', 'Maximize Screen');
+        if (label) label.textContent = 'Maximize';
+        if (enterIcon) enterIcon.style.display = 'inline-block';
+        if (exitIcon) exitIcon.style.display = 'none';
+        btn.classList.remove('is-fullscreen');
+      }
+    });
+  }
+
+  // Bind browser fullscreen change events
+  document.addEventListener('fullscreenchange', updateFullscreenUI);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+  document.addEventListener('mozfullscreenchange', updateFullscreenUI);
+  document.addEventListener('MSFullscreenChange', updateFullscreenUI);
+
+  // Inject Navbar Fullscreen Button across all page layouts
+  function injectNavbarFullscreenButton() {
+    if (document.getElementById('tnNavFsBtn')) return;
+
+    const navTarget = document.querySelector('.navbar__auth') || 
+                      document.querySelector('.navbar__actions') || 
+                      document.querySelector('.mt-nav') ||
+                      document.querySelector('.navbar__inner') ||
+                      document.querySelector('.navbar__container');
+    
+    if (navTarget) {
+      const navBtn = document.createElement('button');
+      navBtn.id = 'tnNavFsBtn';
+      navBtn.className = 'tn-fullscreen-nav-btn tn-fs-toggle';
+      navBtn.title = 'Maximize Screen (Fullscreen View)';
+      navBtn.setAttribute('aria-label', 'Maximize Screen');
+      navBtn.innerHTML = `
+        <svg class="tn-fs-icon-enter" viewBox="0 0 24 24">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+        <svg class="tn-fs-icon-exit" viewBox="0 0 24 24" style="display:none;">
+          <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+        </svg>
+        <span class="tn-fs-label">Maximize</span>
+      `;
+      navBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleFullscreen();
+      });
+
+      if (navTarget.classList.contains('mt-nav')) {
+        navTarget.appendChild(navBtn);
+      } else {
+        navTarget.prepend(navBtn);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectNavbarFullscreenButton);
+  } else {
+    injectNavbarFullscreenButton();
+  }
+
+  // Floating Fullscreen Button Click Handler
+  const floatingFsBtn = document.getElementById('tnFloatingFsBtn');
+  if (floatingFsBtn) {
+    floatingFsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+
+  // Global Keyboard Shortcut: Press 'm' or 'f' to toggle fullscreen
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'm' || e.key === 'M' || e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+        toggleFullscreen();
       }
     }
   });
